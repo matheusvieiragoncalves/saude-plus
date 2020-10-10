@@ -315,7 +315,8 @@ const styles = StyleSheet.create({
 
   selectedItem: {
     borderColor: '#34CB79',
-    borderWidth: 2
+    borderWidth: 2,
+    backgroundColor: '#e1faec'
   },
 
   itemTitle: {

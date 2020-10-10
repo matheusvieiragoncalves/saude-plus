@@ -6,6 +6,6 @@ export async function seed(knex: Knex) {
     { title: 'Ciclismo', image: 'ciclismo.svg' },
     { title: 'Natação', image: 'natacao.svg' },
     { title: 'Patinação', image: 'patins.svg' },
-    { title: 'Lazer', image: 'piquinique.svg' }
+    { title: 'Piquenique no Parque', image: 'piquenique.svg' }
   ]);
 }

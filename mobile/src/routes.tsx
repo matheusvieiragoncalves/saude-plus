@@ -1,7 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
-import CreatePoint from './pages/Create';
+import CreatePoint from './pages/CreatePoint';
 import Home from './pages/Home';
 import Points from './pages/Points';
 
