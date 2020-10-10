@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
+import CreatePoint from './pages/Create';
 import Home from './pages/Home';
 import Points from './pages/Points';
 
@@ -18,7 +19,8 @@ const Routes = () => {
         }}
       >
         <AppStack.Screen name="Home" component={Home} />
-        <AppStack.Screen name="Points" component={Points as any} />
+        <AppStack.Screen name="Points" component={Points} />
+        <AppStack.Screen name="Create" component={CreatePoint} />
         {/* <AppStack.Screen name="Detail" component={Detail as any} /> */}
       </AppStack.Navigator>
     </NavigationContainer>
