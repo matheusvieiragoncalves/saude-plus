@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
@@ -36,6 +36,11 @@ const CreatePoint = () => {
     0
   ]);
 
+  const [markerPosition, setMarkerPosition] = useState<[number, number]>([
+    0,
+    0
+  ]);
+
   const navigation = useNavigation();
 
   function handleNavigateBack() {
@@ -51,6 +56,31 @@ const CreatePoint = () => {
     } else {
       setSelectedItems([...selectedItems, id]);
     }
+  }
+
+  function handlerPressOnMap(event: any) {
+    const { latitude, longitude } = event.nativeEvent.coordinate;
+
+    setMarkerPosition([latitude, longitude]);
+  }
+
+  async function handleSave() {
+    const data = {
+      name,
+      city,
+      uf,
+      items: selectedItems,
+      latitude: markerPosition[0],
+      longitude: markerPosition[1],
+      likes: 0,
+      dislikes: 0
+    };
+
+    await api.post('points', data);
+
+    alert('Ponto esportivo criado');
+
+    navigation.goBack();
   }
 
   useEffect(() => {
@@ -76,6 +106,7 @@ const CreatePoint = () => {
       const { latitude, longitude } = location.coords;
 
       setInitialPosition([latitude, longitude]);
+      setMarkerPosition([latitude, longitude]);
     }
 
     loadPosition();
@@ -88,16 +119,14 @@ const CreatePoint = () => {
           <Icon name="arrow-left" size={20} color="#34cb79" />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Cadastro do ponto de esporte.</Text>
+        <Text style={styles.title}>Cadastro do ponto esportivo.</Text>
 
         <Text style={styles.pointDataTitle}>Dados do ponto</Text>
         <TextInput
           style={styles.input}
-          value={uf}
-          maxLength={2}
-          autoCapitalize="characters"
+          value={name}
           autoCorrect={false}
-          onChangeText={setUf}
+          onChangeText={setName}
           placeholder="Nome do ponto"
         ></TextInput>
 
@@ -113,7 +142,15 @@ const CreatePoint = () => {
                 latitudeDelta: 0.014,
                 longitudeDelta: 0.014
               }}
-            ></MapView>
+              onPress={handlerPressOnMap}
+            >
+              <Marker
+                coordinate={{
+                  latitude: markerPosition[0],
+                  longitude: markerPosition[1]
+                }}
+              />
+            </MapView>
           )}
         </View>
 
@@ -162,6 +199,18 @@ const CreatePoint = () => {
             </TouchableOpacity>
           ))}
         </ScrollView>
+      </View>
+      <View style={styles.footer}>
+        <RectButton
+          style={[styles.buttonAction, styles.buttonActionCancel]}
+          onPress={handleNavigateBack}
+        >
+          <Text style={styles.buttonActionText}>Cancelar</Text>
+        </RectButton>
+
+        <RectButton style={styles.buttonAction} onPress={handleSave}>
+          <Text style={styles.buttonActionText}>Confirmar</Text>
+        </RectButton>
       </View>
     </ScrollView>
   );
@@ -222,7 +271,7 @@ const styles = StyleSheet.create({
   itemsContainer: {
     flexDirection: 'row',
     marginTop: 16,
-    marginBottom: 60
+    marginBottom: 10
   },
 
   item: {
@@ -251,6 +300,34 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_400Regular',
     textAlign: 'center',
     fontSize: 13
+  },
+
+  footer: {
+    paddingVertical: 20,
+    paddingHorizontal: 32,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+  buttonAction: {
+    width: '48%',
+    backgroundColor: '#34CB79',
+    borderRadius: 10,
+    height: 50,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  buttonActionCancel: {
+    backgroundColor: '#ec0101'
+  },
+
+  buttonActionText: {
+    marginLeft: 8,
+    color: '#FFF',
+    fontSize: 16,
+    fontFamily: 'Roboto_500Medium'
   }
 });
 
