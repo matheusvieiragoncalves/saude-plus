@@ -2,6 +2,7 @@ import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import React, { useState } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -18,6 +19,10 @@ const Home = () => {
   const navigation = useNavigation();
 
   function handleNavigateToPoints() {
+    if (uf == '' || city == '') {
+      alert('Preencha os campos');
+      return;
+    }
     navigation.navigate('Points', { uf, city });
   }
 
@@ -28,7 +33,6 @@ const Home = () => {
     >
       <View style={styles.container}>
         <View style={styles.main}>
-          {/* <Image source={require('../../assets/logo.png')} /> */}
           <View>
             <Text style={styles.title}>
               Seu companheiro em uma vida saudável
@@ -57,7 +61,13 @@ const Home = () => {
             onChangeText={setCity}
             placeholder="Digite a Cidade"
           ></TextInput>
-          <RectButton style={styles.button} onPress={handleNavigateToPoints}>
+          <RectButton
+            style={[
+              styles.button,
+              (uf == '' || city == '') && styles.disabledButton
+            ]}
+            onPress={handleNavigateToPoints}
+          >
             <View style={styles.buttonIcon}>
               <Text>
                 <Icon name="arrow-right" color="#fff" size={24} />
@@ -137,6 +147,10 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontFamily: 'Roboto_500Medium',
     fontSize: 16
+  },
+
+  disabledButton: {
+    opacity: 0.5
   }
 });
 

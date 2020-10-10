@@ -50,12 +50,6 @@ import { Feather as Icon } from '@expo/vector-icons';
 
 - expo install expo-location
 
-## Trabalhando com e-mails
-
-- Docs: https://docs.expo.io/versions/latest/sdk/mail-composer/
-
-- expo install expo-mail-composer
-
 ## Trabalhando com compos de select
 
 - Docs: https://www.npmjs.com/package/react-native-picker-select
