@@ -3,12 +3,10 @@ import { useNavigation } from '@react-navigation/native';
 import RNPickerSelect from 'react-native-picker-select'
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   View
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
@@ -63,7 +61,7 @@ const Home = () => {
   },[]);
   useEffect(() => {
     //Carregar as cidades sempre que a UF mudar
-    if(selectedUf === '0') {
+    if(selectedUf === '') {
       return;
     }
     axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`)
@@ -105,9 +103,10 @@ const Home = () => {
                key: uf,
                label: uf,
                value: uf,
-            }))
-          }
+            }))}
+
           style={pickerSelectStyles}
+          useNativeAndroidPickerStyle={false}
           />
           <RNPickerSelect
           placeholder={placeholder[1]}
@@ -120,6 +119,7 @@ const Home = () => {
                value: city,
             }))
           }
+          useNativeAndroidPickerStyle={false}
           style={pickerSelectStyles}
           />
           <RectButton
@@ -173,15 +173,6 @@ const styles = StyleSheet.create({
   footer: {},
 
   select: {},
-
-  input: {
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    marginBottom: 8,
-    paddingHorizontal: 24,
-    fontSize: 16
-  },
 
   button: {
     backgroundColor: '#34CB79',
