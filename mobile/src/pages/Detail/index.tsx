@@ -1,15 +1,15 @@
-import { Feather as Icon, FontAwesome } from '@expo/vector-icons';
+import { Feather as Icon, AntDesign } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
 import {
   Image,
-  Linking,
   SafeAreaView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
+  ScrollView
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import api from '../../services/api';
@@ -54,7 +54,11 @@ const Detail = () => {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <View style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ paddingBottom: 40 }}
+      >
         <TouchableOpacity onPress={handleNavigateBack}>
           <Icon name="arrow-left" size={20} color="#34cb79" />
         </TouchableOpacity>
@@ -76,24 +80,92 @@ const Detail = () => {
         </View>
 
         <View style={styles.fieldContainer}>
+          <Text style={styles.field}>Qualidades do local: </Text>
+
+          <View style={styles.qualityItem}>
+            <View>
+              <Text>Acessibilidade</Text>
+            </View>
+            <View style={styles.avaliationContainer}>
+              <View style={styles.avaregeStar}>
+                <Text style={styles.avaregeStarText}>5.0</Text>
+              </View>
+              <View style={styles.triangle} />
+              <View style={styles.starInput}>
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.qualityItem}>
+            <View>
+              <Text>Segurança</Text>
+            </View>
+            <View style={styles.avaliationContainer}>
+              <View style={styles.avaregeStar}>
+                <Text style={styles.avaregeStarText}>3.6</Text>
+              </View>
+              <View style={styles.triangle} />
+              <View style={styles.starInput}>
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+              </View>
+            </View>
+          </View>
+
+          <View style={styles.qualityItem}>
+            <View>
+              <Text>Iluminação</Text>
+            </View>
+            <View style={styles.avaliationContainer}>
+              <View style={styles.avaregeStar}>
+                <Text style={styles.avaregeStarText}>4.2</Text>
+              </View>
+              <View style={styles.triangle} />
+              <View style={styles.starInput}>
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+                <AntDesign {...starIcon} />
+              </View>
+            </View>
+          </View>
+        </View>
+
+        <View style={styles.fieldContainer}>
           <Text style={styles.field}>Endereço</Text>
           <Text style={styles.addressContent}>
             {data.point.city}, {data.point.uf}
           </Text>
         </View>
-      </View>
-      <View style={styles.footer}>
-        <RectButton style={[styles.button]} onPress={handleNavigateBack}>
-          <View style={styles.buttonIcon}>
-            <Text>
-              <Icon name="arrow-left" color="#fff" size={24} />
-            </Text>
-          </View>
-          <Text style={styles.buttonText}>Voltar</Text>
-        </RectButton>
-      </View>
+
+        <View style={styles.footer}>
+          <RectButton style={styles.button} onPress={handleNavigateBack}>
+            <View style={styles.buttonIcon}>
+              <Text>
+                <Icon name="arrow-left" color="#fff" size={24} />
+              </Text>
+            </View>
+            <Text style={styles.buttonText}>Voltar</Text>
+          </RectButton>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
+};
+
+const starIcon = {
+  name: 'staro',
+  size: 24,
+  color: '#6C6C80'
 };
 
 const styles = StyleSheet.create({
@@ -169,12 +241,53 @@ const styles = StyleSheet.create({
     fontFamily: 'Ubuntu_700Bold',
     marginTop: 24
   },
+
   buttonIcon: {
     height: 60,
     width: 60,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     justifyContent: 'center',
     alignItems: 'center'
+  },
+
+  qualityItem: {
+    marginTop: 20
+  },
+
+  avaliationContainer: {
+    borderWidth: 1,
+    borderRadius: 4,
+    borderColor: '#999999',
+    flexDirection: 'row',
+    paddingRight: 15
+  },
+
+  avaregeStar: {
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+    backgroundColor: '#00be56',
+    padding: 4
+  },
+
+  avaregeStarText: {
+    color: '#fff'
+  },
+
+  triangle: {
+    alignSelf: 'center',
+    width: 0,
+    height: 0,
+    borderWidth: 10,
+    transform: [{ rotate: '-90deg' }],
+    borderTopColor: '#00be56',
+    borderColor: 'transparent'
+  },
+
+  starInput: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexGrow: 1,
+    padding: 4
   }
 });
 
