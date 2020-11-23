@@ -36,6 +36,7 @@ interface Data {
 interface AvaliationItems {
   id: number;
   name: string;
+  avarege: number;
 }
 
 interface Comment {
@@ -49,9 +50,9 @@ interface Comment {
 }
 
 const avaliationItems = [
-  { id: 1, name: 'Facilidade de acesso' },
-  { id: 2, name: 'Segurança' },
-  { id: 3, name: 'Iluminação' }
+  { id: 1, name: 'Facilidade de acesso', avarege: 5.0 },
+  { id: 2, name: 'Segurança', avarege: 3.2 },
+  { id: 3, name: 'Iluminação', avarege: 4.6 }
 ] as AvaliationItems[];
 
 const comments = [
@@ -161,7 +162,9 @@ const Detail = () => {
               </View>
               <View style={styles.avaliationContainer}>
                 <View style={styles.avaregeStar}>
-                  <Text style={styles.avaregeStarText}>5.0</Text>
+                  <Text style={styles.avaregeStarText}>
+                    {item.avarege.toFixed(1)}
+                  </Text>
                 </View>
                 <View style={styles.triangle} />
                 <View style={styles.starInput}>
