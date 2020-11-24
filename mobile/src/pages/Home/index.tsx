@@ -43,9 +43,6 @@ interface OwnProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<Props> = (props) => {
-  const [uf, setUf] = useState('');
-  const [city, setCity] = useState('');
-
   const [ufs, setUfs] = useState<string[]>([]);
   const [selectedUf, setSelectedUf] = useState('');
   const [cities, setCities] = useState<string[]>([]);
