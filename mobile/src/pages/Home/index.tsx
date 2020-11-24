@@ -1,7 +1,10 @@
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import RNPickerSelect from 'react-native-picker-select'
-import React, { useEffect, useState } from 'react';
+import RNPickerSelect from 'react-native-picker-select';
+import React, { useEffect, useState, FunctionComponent } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect } from 'react-redux';
+
 import {
   KeyboardAvoidingView,
   Platform,
@@ -20,7 +23,28 @@ interface IBGECityResponse {
   nome: string;
 }
 
-const Home = () => {
+import { Location } from '../../store/ducks/location/types';
+import * as LocationActions from '../../store/ducks/location/actions';
+import { AplicationState } from '../../store';
+
+//Mapeia o que vem no state
+interface StateProps {
+  location: Location;
+}
+
+// Mapei as funções que podem ser utilizadas
+interface DispatchProps {
+  setLocationRequest(data: Location): void;
+}
+
+// Qualquer propriedade que vier de um componente pai
+interface OwnProps {}
+
+type Props = StateProps & DispatchProps & OwnProps;
+
+const Home: FunctionComponent<Props> = (props) => {
+  const [uf, setUf] = useState('');
+  const [city, setCity] = useState('');
 
   const [ufs, setUfs] = useState<string[]>([]);
   const [selectedUf, setSelectedUf] = useState('');
@@ -29,52 +53,51 @@ const Home = () => {
   const navigation = useNavigation();
 
   function handleNavigateToPoints() {
-    console.log(selectedCity,selectedUf)
-    if (selectedCity == '' || selectedUf == '') {
-      alert('Preencha os campos');
-      return;
-    }
-    navigation.navigate('Points', { selectedUf, selectedCity });
+    const { setLocationRequest } = props;
+
+    setLocationRequest({ uf: selectedUf, city: selectedCity });
+
+    navigation.navigate('Points');
   }
-   
 
   const placeholder = [
     {
       label: 'Selecione uma UF',
       value: null,
-      color: '#9EA0A4',
+      color: '#9EA0A4'
     },
     {
       label: 'Selecione uma Cidade',
       value: null,
-      color: '#9EA0A4',
-    },
+      color: '#9EA0A4'
+    }
   ];
 
-  useEffect(()=>{
-    axios.get<IBGEUFResponse[]>('https://servicodados.ibge.gov.br/api/v1/localidades/estados').then(
-      response => {
-        const UfInitials = response.data.map(uf => uf.sigla);
+  useEffect(() => {
+    axios
+      .get<IBGEUFResponse[]>(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+      )
+      .then((response) => {
+        const UfInitials = response.data.map((uf) => uf.sigla);
         setUfs(UfInitials);
-      }
-    )
-  },[]);
+      });
+  }, []);
+
   useEffect(() => {
     //Carregar as cidades sempre que a UF mudar
-    if(selectedUf === '') {
+    if (selectedUf === '') {
       return;
     }
-    axios.get<IBGECityResponse[]>(`https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`)
-    .then(response => {
-        const CityNames = response.data.map(city => city.nome);
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`
+      )
+      .then((response) => {
+        const CityNames = response.data.map((city) => city.nome);
         setCities(CityNames);
-      }
-    )
-
-  },[selectedUf])
-  function teste() {
-    console.log(selectedCity,selectedUf)
-  }
+      });
+  }, [selectedUf]);
 
   return (
     <KeyboardAvoidingView
@@ -94,33 +117,27 @@ const Home = () => {
           </View>
         </View>
         <View style={styles.footer}>
-        <RNPickerSelect
-          placeholder={placeholder[0]}
-          onValueChange={(value) => setSelectedUf(value)}
-          items = {            
-            ufs.map(uf => (
-            {
-               key: uf,
-               label: uf,
-               value: uf,
+          <RNPickerSelect
+            placeholder={placeholder[0]}
+            onValueChange={(value) => setSelectedUf(value)}
+            items={ufs.map((uf) => ({
+              key: uf,
+              label: uf,
+              value: uf
             }))}
-
-          style={pickerSelectStyles}
-          useNativeAndroidPickerStyle={false}
+            style={pickerSelectStyles}
+            useNativeAndroidPickerStyle={false}
           />
           <RNPickerSelect
-          placeholder={placeholder[1]}
-          onValueChange={(value) => setSelectedCity(value)}
-          items = {            
-            cities.map(city => (
-            {
-               key: city,
-               label: city,
-               value: city,
-            }))
-          }
-          useNativeAndroidPickerStyle={false}
-          style={pickerSelectStyles}
+            placeholder={placeholder[1]}
+            onValueChange={(value) => setSelectedCity(value)}
+            items={cities.map((city) => ({
+              key: city,
+              label: city,
+              value: city
+            }))}
+            useNativeAndroidPickerStyle={false}
+            style={pickerSelectStyles}
           />
           <RectButton
             style={[
@@ -141,6 +158,15 @@ const Home = () => {
     </KeyboardAvoidingView>
   );
 };
+
+const mapStateToProps = (state: AplicationState) => ({
+  location: state.location.data
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(LocationActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
   container: {
@@ -205,6 +231,7 @@ const styles = StyleSheet.create({
     opacity: 0.5
   }
 });
+
 const pickerSelectStyles = StyleSheet.create({
   inputAndroid: {
     height: 60,
@@ -213,8 +240,6 @@ const pickerSelectStyles = StyleSheet.create({
     marginBottom: 8,
     paddingHorizontal: 24,
     fontSize: 16,
-    color:'black'
-  },
-})
-
-export default Home;
+    color: 'black'
+  }
+});
