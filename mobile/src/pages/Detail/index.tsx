@@ -13,7 +13,6 @@ import {
   TextInput
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import { min } from 'react-native-reanimated';
 
 import api from '../../services/api';
 
@@ -231,9 +230,15 @@ const Detail = () => {
                 <View style={styles.starListComment}>
                   {[...Array(5)].map((_, index) => {
                     if (index < item.stars)
-                      return <AntDesign {...starIconComment} name="star" />;
+                      return (
+                        <AntDesign
+                          key={index}
+                          {...starIconComment}
+                          name="star"
+                        />
+                      );
 
-                    return <AntDesign {...starIconComment} />;
+                    return <AntDesign key={index} {...starIconComment} />;
                   })}
                 </View>
                 <Text style={styles.commentDate}>{item.date}</Text>

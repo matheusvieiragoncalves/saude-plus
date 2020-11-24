@@ -1,6 +1,7 @@
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState, FunctionComponent } from 'react';
+import RNPickerSelect from 'react-native-picker-select';
+import React, { useEffect, useState, FunctionComponent } from 'react';
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 
@@ -9,10 +10,18 @@ import {
   Platform,
   StyleSheet,
   Text,
-  TextInput,
   View
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
+import axios from 'axios';
+
+interface IBGEUFResponse {
+  sigla: string;
+}
+
+interface IBGECityResponse {
+  nome: string;
+}
 
 import { Location } from '../../store/ducks/location/types';
 import * as LocationActions from '../../store/ducks/location/actions';
@@ -34,18 +43,58 @@ interface OwnProps {}
 type Props = StateProps & DispatchProps & OwnProps;
 
 const Home: FunctionComponent<Props> = (props) => {
-  const [uf, setUf] = useState('');
-  const [city, setCity] = useState('');
-
+  const [ufs, setUfs] = useState<string[]>([]);
+  const [selectedUf, setSelectedUf] = useState('');
+  const [cities, setCities] = useState<string[]>([]);
+  const [selectedCity, setSelectedCity] = useState('');
   const navigation = useNavigation();
 
   function handleNavigateToPoints() {
     const { setLocationRequest } = props;
 
-    setLocationRequest({ uf, city });
+    setLocationRequest({ uf: selectedUf, city: selectedCity });
 
     navigation.navigate('Points');
   }
+
+  const placeholder = [
+    {
+      label: 'Selecione uma UF',
+      value: null,
+      color: '#9EA0A4'
+    },
+    {
+      label: 'Selecione uma Cidade',
+      value: null,
+      color: '#9EA0A4'
+    }
+  ];
+
+  useEffect(() => {
+    axios
+      .get<IBGEUFResponse[]>(
+        'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+      )
+      .then((response) => {
+        const UfInitials = response.data.map((uf) => uf.sigla);
+        setUfs(UfInitials);
+      });
+  }, []);
+
+  useEffect(() => {
+    //Carregar as cidades sempre que a UF mudar
+    if (selectedUf === '') {
+      return;
+    }
+    axios
+      .get<IBGECityResponse[]>(
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${selectedUf}/municipios`
+      )
+      .then((response) => {
+        const CityNames = response.data.map((city) => city.nome);
+        setCities(CityNames);
+      });
+  }, [selectedUf]);
 
   return (
     <KeyboardAvoidingView
@@ -64,28 +113,33 @@ const Home: FunctionComponent<Props> = (props) => {
             </Text>
           </View>
         </View>
-
         <View style={styles.footer}>
-          <TextInput
-            style={styles.input}
-            value={uf}
-            maxLength={2}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            onChangeText={setUf}
-            placeholder="Digite a UF"
-          ></TextInput>
-          <TextInput
-            style={styles.input}
-            value={city}
-            autoCorrect={false}
-            onChangeText={setCity}
-            placeholder="Digite a Cidade"
-          ></TextInput>
+          <RNPickerSelect
+            placeholder={placeholder[0]}
+            onValueChange={(value) => setSelectedUf(value)}
+            items={ufs.map((uf) => ({
+              key: uf,
+              label: uf,
+              value: uf
+            }))}
+            style={pickerSelectStyles}
+            useNativeAndroidPickerStyle={false}
+          />
+          <RNPickerSelect
+            placeholder={placeholder[1]}
+            onValueChange={(value) => setSelectedCity(value)}
+            items={cities.map((city) => ({
+              key: city,
+              label: city,
+              value: city
+            }))}
+            useNativeAndroidPickerStyle={false}
+            style={pickerSelectStyles}
+          />
           <RectButton
             style={[
               styles.button,
-              (uf == '' || city == '') && styles.disabledButton
+              (selectedUf == '' || selectedCity == '') && styles.disabledButton
             ]}
             onPress={handleNavigateToPoints}
           >
@@ -143,15 +197,6 @@ const styles = StyleSheet.create({
 
   select: {},
 
-  input: {
-    height: 60,
-    backgroundColor: '#FFF',
-    borderRadius: 10,
-    marginBottom: 8,
-    paddingHorizontal: 24,
-    fontSize: 16
-  },
-
   button: {
     backgroundColor: '#34CB79',
     height: 60,
@@ -181,5 +226,17 @@ const styles = StyleSheet.create({
 
   disabledButton: {
     opacity: 0.5
+  }
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputAndroid: {
+    height: 60,
+    backgroundColor: '#FFF',
+    borderRadius: 10,
+    marginBottom: 8,
+    paddingHorizontal: 24,
+    fontSize: 16,
+    color: 'black'
   }
 });
