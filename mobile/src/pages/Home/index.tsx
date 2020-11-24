@@ -1,8 +1,10 @@
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-import React, { useState } from 'react';
+import React, { useState, FunctionComponent } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect } from 'react-redux';
+
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -12,18 +14,37 @@ import {
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 
-const Home = () => {
+import { Location } from '../../store/ducks/location/types';
+import * as LocationActions from '../../store/ducks/location/actions';
+import { AplicationState } from '../../store';
+
+//Mapeia o que vem no state
+interface StateProps {
+  location: Location;
+}
+
+// Mapei as funções que podem ser utilizadas
+interface DispatchProps {
+  setLocationRequest(data: Location): void;
+}
+
+// Qualquer propriedade que vier de um componente pai
+interface OwnProps {}
+
+type Props = StateProps & DispatchProps & OwnProps;
+
+const Home: FunctionComponent<Props> = (props) => {
   const [uf, setUf] = useState('');
   const [city, setCity] = useState('');
 
   const navigation = useNavigation();
 
   function handleNavigateToPoints() {
-    if (uf == '' || city == '') {
-      alert('Preencha os campos');
-      return;
-    }
-    navigation.navigate('Points', { uf, city });
+    const { setLocationRequest } = props;
+
+    setLocationRequest({ uf, city });
+
+    navigation.navigate('Points');
   }
 
   return (
@@ -36,6 +57,7 @@ const Home = () => {
           <View>
             <Text style={styles.title}>
               Seu companheiro em uma vida saudável
+              {props.location.city}
             </Text>
             <Text style={styles.description}>
               Ajudamos pessoas a encontrarem locais esportivos e a organizarem
@@ -80,6 +102,15 @@ const Home = () => {
     </KeyboardAvoidingView>
   );
 };
+
+const mapStateToProps = (state: AplicationState) => ({
+  location: state.location.data
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(LocationActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 const styles = StyleSheet.create({
   container: {
@@ -153,5 +184,3 @@ const styles = StyleSheet.create({
     opacity: 0.5
   }
 });
-
-export default Home;

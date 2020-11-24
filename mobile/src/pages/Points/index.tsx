@@ -2,8 +2,10 @@ import { Feather as Icon } from '@expo/vector-icons';
 
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
-import * as Location from 'expo-location';
-import React, { useEffect, useState } from 'react';
+import * as LocationRouter from 'expo-location';
+import React, { useEffect, useState, FunctionComponent } from 'react';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import {
   Alert,
   Image,
@@ -16,6 +18,11 @@ import {
 import { RectButton } from 'react-native-gesture-handler';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg';
+
+import { Location } from '../../store/ducks/location/types';
+import * as LocationActions from '../../store/ducks/location/actions';
+import { AplicationState } from '../../store';
+
 import api from '../../services/api';
 
 interface Item {
@@ -32,12 +39,22 @@ interface Point {
   longitude: number;
 }
 
-interface Params {
-  uf: string;
-  city: string;
+//Mapeia o que vem no state
+interface StateProps {
+  location: Location;
 }
 
-const Points = () => {
+// Mapei as funções que podem ser utilizadas
+interface DispatchProps {
+  setLocationRequest(data: Location): void;
+}
+
+// Qualquer propriedade que vier de um componente pai
+interface OwnProps {}
+
+type Props = StateProps & DispatchProps & OwnProps;
+
+const Points: FunctionComponent<Props> = (props) => {
   const [items, setItems] = useState<Item[]>([]);
   const [points, setPoints] = useState<Point[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -50,8 +67,6 @@ const Points = () => {
   const navigation = useNavigation();
   const route = useRoute();
 
-  const routeParams = route.params as Params;
-
   useEffect(() => {
     api.get('items').then((response) => {
       setItems(response.data);
@@ -60,7 +75,7 @@ const Points = () => {
 
   useEffect(() => {
     async function loadPosition() {
-      const { status } = await Location.requestPermissionsAsync();
+      const { status } = await LocationRouter.requestPermissionsAsync();
 
       if (status !== 'granted') {
         Alert.alert(
@@ -70,9 +85,9 @@ const Points = () => {
         return;
       }
 
-      const location = await Location.getCurrentPositionAsync();
+      const locationRouter = await LocationRouter.getCurrentPositionAsync();
 
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude } = locationRouter.coords;
 
       setInitialPosition([latitude, longitude]);
     }
@@ -84,8 +99,8 @@ const Points = () => {
     api
       .get('points', {
         params: {
-          city: routeParams.city,
-          uf: routeParams.uf,
+          city: props.location.city,
+          uf: props.location.uf,
           items: selectedItems
         }
       })
@@ -202,6 +217,15 @@ const Points = () => {
     </>
   );
 };
+
+const mapStateToProps = (state: AplicationState) => ({
+  location: state.location.data
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(LocationActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(Points);
 
 const styles = StyleSheet.create({
   container: {
@@ -325,5 +349,3 @@ const styles = StyleSheet.create({
     fontSize: 13
   }
 });
-
-export default Points;

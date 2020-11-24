@@ -60,4 +60,10 @@
 
 ## Trabalhando com redux
 
-- yarn add redux redux-saga react-redux
+yarn add redux react-redux
+yarn add @types/redux -D
+yarn add typesafe-actions
+yarn add redux-saga
+yarn add @types/redux-saga -D
+
+(redux-persist -> não usou)
