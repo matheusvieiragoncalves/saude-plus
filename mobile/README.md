@@ -12,7 +12,7 @@
 
 - adicionar fonte:
 
-expo install expo-font @expo-google-fonts/nome-da-fonte
+- expo install expo-font @expo-google-fonts/nome-da-fonte
 
 ### Trabalhando com botões e navegação
 
@@ -26,9 +26,9 @@ expo install expo-font @expo-google-fonts/nome-da-fonte
 
 ### Trabahando com icones
 
-O expo ja exporta todos os pacotes de icones, não é necessário baixar nenhuma biblioteca bastca usar:
+- O expo ja exporta todos os pacotes de icones, não é necessário baixar nenhuma biblioteca bastca usar:
 
-import { Feather as Icon } from '@expo/vector-icons';
+- import { Feather as Icon } from '@expo/vector-icons';
 
 ### Trabalhando com Mapa
 
@@ -53,3 +53,11 @@ import { Feather as Icon } from '@expo/vector-icons';
 ## Trabalhando com compos de select
 
 - Docs: https://www.npmjs.com/package/react-native-picker-select
+
+## Configruando Reactotron (ferramenta que ajuda a debugar o redux)
+
+- yarn add reactotron-react-native reactotron-redux reactotron-redux-saga
+
+## Trabalhando com redux
+
+- yarn add redux redux-saga react-redux

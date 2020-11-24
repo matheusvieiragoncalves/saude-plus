@@ -3,6 +3,8 @@ import { Ubuntu_700Bold, useFonts } from '@expo-google-fonts/ubuntu';
 import { AppLoading } from 'expo';
 import React from 'react';
 import { StatusBar } from 'react-native';
+
+import './src/config/ReactotronConfig';
 import Routes from './src/routes';
 
 export default function App() {
