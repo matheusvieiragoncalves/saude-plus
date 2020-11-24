@@ -57,7 +57,6 @@ const Home: FunctionComponent<Props> = (props) => {
           <View>
             <Text style={styles.title}>
               Seu companheiro em uma vida saudável
-              {props.location.city}
             </Text>
             <Text style={styles.description}>
               Ajudamos pessoas a encontrarem locais esportivos e a organizarem

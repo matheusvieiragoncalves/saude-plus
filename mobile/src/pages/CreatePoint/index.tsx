@@ -1,9 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FunctionComponent } from 'react';
 
 import { RectButton, TouchableOpacity } from 'react-native-gesture-handler';
 import { Feather as Icon } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import Constants from 'expo-constants';
+import { bindActionCreators, Dispatch } from 'redux';
+import { connect } from 'react-redux';
 import {
   Text,
   View,
@@ -12,9 +14,13 @@ import {
   Alert,
   ScrollView
 } from 'react-native';
-import * as Location from 'expo-location';
+import * as LocationRouter from 'expo-location';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg';
+
+import { Location } from '../../store/ducks/location/types';
+import * as LocationActions from '../../store/ducks/location/actions';
+import { AplicationState } from '../../store';
 
 import api from '../../services/api';
 
@@ -24,10 +30,23 @@ interface Item {
   image_url: string;
 }
 
-const CreatePoint = () => {
+//Mapeia o que vem no state
+interface StateProps {
+  location: Location;
+}
+
+// Mapei as funções que podem ser utilizadas
+interface DispatchProps {
+  setLocationRequest(data: Location): void;
+}
+
+// Qualquer propriedade que vier de um componente pai
+interface OwnProps {}
+
+type Props = StateProps & DispatchProps & OwnProps;
+
+const CreatePoint: FunctionComponent<Props> = (props) => {
   const [name, setName] = useState('');
-  const [city, setCity] = useState('');
-  const [uf, setUf] = useState('');
   const [items, setItems] = useState<Item[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
@@ -67,8 +86,8 @@ const CreatePoint = () => {
   async function handleSave() {
     const data = {
       name,
-      city,
-      uf,
+      city: props.location.city,
+      uf: props.location.uf,
       items: selectedItems,
       latitude: markerPosition[0],
       longitude: markerPosition[1],
@@ -91,7 +110,7 @@ const CreatePoint = () => {
 
   useEffect(() => {
     async function loadPosition() {
-      const { status } = await Location.requestPermissionsAsync();
+      const { status } = await LocationRouter.requestPermissionsAsync();
 
       if (status !== 'granted') {
         Alert.alert(
@@ -101,9 +120,9 @@ const CreatePoint = () => {
         return;
       }
 
-      const location = await Location.getCurrentPositionAsync();
+      const locationRouter = await LocationRouter.getCurrentPositionAsync();
 
-      const { latitude, longitude } = location.coords;
+      const { latitude, longitude } = locationRouter.coords;
 
       setInitialPosition([latitude, longitude]);
       setMarkerPosition([latitude, longitude]);
@@ -154,26 +173,6 @@ const CreatePoint = () => {
           )}
         </View>
 
-        <View style={styles.inputGroup}>
-          <TextInput
-            style={styles.input}
-            value={uf}
-            maxLength={2}
-            autoCapitalize="characters"
-            autoCorrect={false}
-            onChangeText={setUf}
-            placeholder="UF"
-          ></TextInput>
-
-          <TextInput
-            style={styles.input}
-            value={city}
-            autoCorrect={false}
-            onChangeText={setCity}
-            placeholder="Nome da cidade"
-          ></TextInput>
-        </View>
-
         <Text style={styles.pointDataTitle}>
           Selecione os esportes desse local
         </Text>
@@ -216,6 +215,15 @@ const CreatePoint = () => {
   );
 };
 
+const mapStateToProps = (state: AplicationState) => ({
+  location: state.location.data
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) =>
+  bindActionCreators(LocationActions, dispatch);
+
+export default connect(mapStateToProps, mapDispatchToProps)(CreatePoint);
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -244,15 +252,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     fontSize: 16,
     marginTop: 10
-  },
-
-  ufInput: {
-    marginRight: 5
-  },
-
-  inputGroup: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
   },
 
   mapContainer: {
@@ -330,5 +329,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto_500Medium'
   }
 });
-
-export default CreatePoint;
