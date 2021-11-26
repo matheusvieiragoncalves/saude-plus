@@ -1,11 +1,8 @@
 import { Feather as Icon } from '@expo/vector-icons';
-
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import * as LocationRouter from 'expo-location';
-import React, { useEffect, useState, FunctionComponent } from 'react';
-import { bindActionCreators, Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
   Alert,
   Image,
@@ -18,12 +15,12 @@ import {
 import { RectButton } from 'react-native-gesture-handler';
 import MapView, { Marker } from 'react-native-maps';
 import { SvgUri } from 'react-native-svg';
-
-import { Location } from '../../store/ducks/location/types';
-import * as LocationActions from '../../store/ducks/location/actions';
-import { AplicationState } from '../../store';
-
+import { connect } from 'react-redux';
+import { bindActionCreators, Dispatch } from 'redux';
 import api from '../../services/api';
+import { AplicationState } from '../../store';
+import * as LocationActions from '../../store/ducks/location/actions';
+import { Location } from '../../store/ducks/location/types';
 
 interface Item {
   id: number;
@@ -60,8 +57,7 @@ const Points: FunctionComponent<Props> = (props) => {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
-    0,
-    0
+    0, 0
   ]);
 
   const navigation = useNavigation();

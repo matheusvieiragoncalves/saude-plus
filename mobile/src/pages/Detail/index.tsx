@@ -1,19 +1,18 @@
-import { Feather as Icon, AntDesign } from '@expo/vector-icons';
+import { AntDesign, Feather as Icon } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import React, { useEffect, useState } from 'react';
 import {
   Image,
   SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
-  View,
-  ScrollView,
-  TextInput
+  View
 } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-
 import api from '../../services/api';
 
 interface Params {
@@ -167,11 +166,11 @@ const Detail = () => {
                 </View>
                 <View style={styles.triangle} />
                 <View style={styles.starInput}>
+                  {/* <AntDesign {...starIcon} />
                   <AntDesign {...starIcon} />
                   <AntDesign {...starIcon} />
                   <AntDesign {...starIcon} />
-                  <AntDesign {...starIcon} />
-                  <AntDesign {...starIcon} />
+                  <AntDesign {...starIcon} /> */}
                 </View>
               </View>
             </View>
@@ -238,7 +237,8 @@ const Detail = () => {
                         />
                       );
 
-                    return <AntDesign key={index} {...starIconComment} />;
+                    return <View />;
+                    // <AntDesign key={index} {...starIconComment} />;
                   })}
                 </View>
                 <Text style={styles.commentDate}>{item.date}</Text>
